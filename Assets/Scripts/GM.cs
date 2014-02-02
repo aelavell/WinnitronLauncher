@@ -7,6 +7,7 @@ public class GM : MonoBehaviour {
 	public List<Playlist> playlists;
 
 	public GameObject playlistScrollView;
+	public GameObject playlistNameOverlay;
 
 	//Where in the array the game selection is
 	public int viewingPlaylist = 0;
@@ -32,28 +33,43 @@ public class GM : MonoBehaviour {
 	{
 		playlists = new List<Playlist>();
 
-		AddPlaylist();
+		AddPlaylist("Cool Games");
 
 		playlists[0].AddNewGame("Nuclear Throne", "Vlambeer");
 		playlists[0].AddNewGame("Nidhogg", "Mark Essen");
 		playlists[0].AddNewGame("Super Crate Box", "Vlambeer");
 		playlists[0].AddNewGame("Sumo Topplers", "Marlon Wiebe");
 
-		AddPlaylist();
+		AddPlaylist("Super Bros");
 		
 		playlists[1].AddNewGame("Nuclear Throne", "Vlambeer");
 		playlists[1].AddNewGame("Nidhogg", "Mark Essen");
 		playlists[1].AddNewGame("Super Crate Box", "Vlambeer");
 		playlists[1].AddNewGame("Sumo Topplers", "Marlon Wiebe");
 
+		AddPlaylist("Hans Yolo's Pix");
+		
+		playlists[2].AddNewGame("Nuclear Throne", "Vlambeer");
+		playlists[2].AddNewGame("Nidhogg", "Mark Essen");
+		playlists[2].AddNewGame("Super Crate Box", "Vlambeer");
+		playlists[2].AddNewGame("Sumo Topplers", "Marlon Wiebe");
+		playlists[2].AddNewGame("Nuclear Throne", "Vlambeer");
+		playlists[2].AddNewGame("Nidhogg", "Mark Essen");
+		playlists[2].AddNewGame("Super Crate Box", "Vlambeer");
+		playlists[2].AddNewGame("Sumo Topplers", "Marlon Wiebe");
+
+		AddPlaylist("bAd gaMez");
+		
+		playlists[3].AddNewGame("Nuclear Throne", "Vlambeer");
+
 		RefreshGrid();
 
 		ViewPlaylist(0);
 	}
 
-	void AddPlaylist()
+	void AddPlaylist(string listname)
 	{
-		playlists.Add(new Playlist());
+		playlists.Add(new Playlist(listname));
 	}
 
 	void MovePlaylistRight()
@@ -73,9 +89,9 @@ public class GM : MonoBehaviour {
 			if(lst < 0) viewingPlaylist = playlists.Count - 1;
 			else if(lst > playlists.Count - 1) viewingPlaylist = 0;
 			else viewingPlaylist = lst;
-			
-			Dbug.Log("Calling ViewPlaylist, trying to view game " + viewingPlaylist);
+
 			playlistScrollView.GetComponent<UICenterOnChild>().CenterOn(playlists[viewingPlaylist].gameObject.transform);
+			playlistNameOverlay.GetComponent<UICenterOnChild>().CenterOn(playlists[viewingPlaylist].playlistLabel.transform);
 		}
 	}
 
@@ -92,6 +108,7 @@ public class GM : MonoBehaviour {
 	void RefreshGrid()
 	{
 		playlistScrollView.GetComponentInChildren<UIGrid>().Reposition();
+		playlistNameOverlay.GetComponentInChildren<UIGrid>().Reposition();
 	}
 	
 	void CursorOver(int g)

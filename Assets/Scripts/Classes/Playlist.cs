@@ -4,21 +4,31 @@ using System.Collections.Generic;
 
 public class Playlist {
 
+	public string name;
+
 	public List<Game> games;
 	public GameObject gameObject;
 	private Transform gameScrollView;
+	public GameObject playlistLabel;
 
 	public int viewingGame = 0;
 
-	public Playlist()
+	public Playlist(string listname)
 	{
+		name = listname;
+
 		games = new List<Game>();
 
 		gameObject = GameObject.Instantiate(Resources.Load("Prefabs/Playlist")) as GameObject;
 		gameObject.transform.parent = GameObject.Find("PlaylistGrid").transform;
 
 		gameScrollView = gameObject.transform.Find("GameScrollView");
-		Dbug.Log("Found game grid for playlist: " + gameScrollView);
+
+		//Make the playlist label that will appear at top of screen
+		playlistLabel = GameObject.Instantiate(Resources.Load("Prefabs/PlaylistLabel")) as GameObject;
+		playlistLabel.transform.parent = GameObject.Find("PlaylistNamesGrid").transform;
+		playlistLabel.transform.localScale = new Vector3(1.174516f, 1.174516f, 1.174516f);
+		playlistLabel.GetComponent<UILabel>().text = name;
 	}
 
 	public void AddNewGame(string n, string d)

@@ -8,7 +8,8 @@ public class Game {
 	public Sprite sprite;
 	public GameObject gameObject;
 	
-	public Game(string name, string description, GameObject myparent) {
+	public Game(string name, string description, GameObject myparent) 
+	{
 		this.name = name;
 		this.description = description;
 
