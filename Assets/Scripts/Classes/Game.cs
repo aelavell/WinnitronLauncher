@@ -6,17 +6,24 @@ public class Game {
 	public string name;
 	public string description;
 	public Sprite sprite;
-	public GameObject gameImgObj;
+	public GameObject gameObject;
 	
 	public Game(string name, string description, GameObject myparent) {
 		this.name = name;
 		this.description = description;
-		this.sprite = sprite;
 
-		gameImgObj = GameObject.Instantiate(Resources.Load("GameImage")) as GameObject;
-		gameImgObj.transform.parent = myparent.transform;
+		//rando sprite for now
+		Sprite[] sprites = Resources.LoadAll<Sprite>("Images");
+		sprite = sprites[Random.Range(0, sprites.Length)];
 
-		gameImgObj.transform.localScale = new Vector3(1, 1, 1);
+		Dbug.Log("Loading game sprite: " + sprite);
+
+		gameObject = GameObject.Instantiate(Resources.Load("Prefabs/GameImage")) as GameObject;
+		gameObject.transform.parent = myparent.transform.Find("GameScrollView/GameGrid");
+
+		gameObject.GetComponent<UI2DSprite>().sprite2D = sprite;
+
+		gameObject.transform.localScale = new Vector3(1, 1, 1);
 	}
 
 	public void CursorOver ()

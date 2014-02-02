@@ -6,22 +6,26 @@ public class GM : MonoBehaviour {
 
 	public List<Playlist> playlists;
 
-	public GameObject imageGrid;
+	public GameObject playlistScrollView;
 
 	//Where in the array the game selection is
-	public int playlistSelected = 0;
+	public int viewingPlaylist = 0;
 
 	// Use this for initialization
 	void Start () 
 	{
+		Dbug.On();
+		
 		CreateGameList();
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(Input.GetKeyDown(KeyCode.RightArrow)) MoveList(1);
-		if(Input.GetKeyDown(KeyCode.LeftArrow)) MoveList(-1);
+		if(Input.GetKeyDown(KeyCode.RightArrow)) MovePlaylistRight();
+		if(Input.GetKeyDown(KeyCode.LeftArrow)) MovePlaylistLeft();
+		if(Input.GetKeyDown(KeyCode.DownArrow)) MoveGameDown();
+		if(Input.GetKeyDown(KeyCode.UpArrow)) MoveGameUp();
 	}
 
 	void CreateGameList() 
@@ -35,9 +39,16 @@ public class GM : MonoBehaviour {
 		playlists[0].AddNewGame("Super Crate Box", "Vlambeer");
 		playlists[0].AddNewGame("Sumo Topplers", "Marlon Wiebe");
 
+		AddPlaylist();
+		
+		playlists[1].AddNewGame("Nuclear Throne", "Vlambeer");
+		playlists[1].AddNewGame("Nidhogg", "Mark Essen");
+		playlists[1].AddNewGame("Super Crate Box", "Vlambeer");
+		playlists[1].AddNewGame("Sumo Topplers", "Marlon Wiebe");
+
 		RefreshGrid();
 
-		MoveToPlaylist(0);
+		ViewPlaylist(0);
 	}
 
 	void AddPlaylist()
@@ -45,30 +56,44 @@ public class GM : MonoBehaviour {
 		playlists.Add(new Playlist());
 	}
 
-	void MoveList(int dir)
+	void MovePlaylistRight()
 	{
-		playlistSelected += dir;
+		ViewPlaylist(viewingPlaylist + 1);
+	}
 
-		if(playlists.Count > 0)
+	void MovePlaylistLeft()
+	{
+		ViewPlaylist(viewingPlaylist - 1);
+	}
+
+	void ViewPlaylist(int lst)
+	{
+		if(playlists.Count > 1)
 		{
-			if(playlistSelected < 0) playlistSelected = playlists.Count - 1;
-			if(playlistSelected > playlists.Count) playlistSelected = 0;
+			if(lst < 0) viewingPlaylist = playlists.Count - 1;
+			else if(lst > playlists.Count - 1) viewingPlaylist = 0;
+			else viewingPlaylist = lst;
+			
+			Dbug.Log("Calling ViewPlaylist, trying to view game " + viewingPlaylist);
+			playlistScrollView.GetComponent<UICenterOnChild>().CenterOn(playlists[viewingPlaylist].gameObject.transform);
 		}
+	}
 
-		MoveToPlaylist(playlistSelected);
+	void MoveGameUp()
+	{
+		playlists[viewingPlaylist].MoveUp();
+	}
+
+	void MoveGameDown()
+	{
+		playlists[viewingPlaylist].MoveDown();
 	}
 
 	void RefreshGrid()
 	{
-		imageGrid.GetComponent<UIGrid>().Reposition();
-		imageGrid.GetComponentInChildren<UIGrid>().Reposition();
+		playlistScrollView.GetComponentInChildren<UIGrid>().Reposition();
 	}
-
-	void MoveToPlaylist(int lst)
-	{
-
-	}
-
+	
 	void CursorOver(int g)
 	{
 
