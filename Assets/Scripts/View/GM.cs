@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GM : MonoBehaviour {
+	/*
 
 	public List<Playlist> playlists;
 
 	public GameObject playlistScrollView;
 	public GameObject playlistNameOverlay;
+	public Playlist playListPrefab;
 
 	//Where in the array the game selection is
 	public int viewingPlaylist = 0;
@@ -25,8 +27,7 @@ public class GM : MonoBehaviour {
 	{
 		if(Input.GetKeyDown(KeyCode.RightArrow)) MovePlaylistRight();
 		if(Input.GetKeyDown(KeyCode.LeftArrow)) MovePlaylistLeft();
-		if(Input.GetKeyDown(KeyCode.DownArrow)) MoveGameDown();
-		if(Input.GetKeyDown(KeyCode.UpArrow)) MoveGameUp();
+
 	}
 
 	void CreateGameList() 
@@ -69,7 +70,7 @@ public class GM : MonoBehaviour {
 
 	void AddPlaylist(string listname)
 	{
-		playlists.Add(new Playlist(listname));
+		var playlist = Instantiate (playListPrefab) as Playlist;
 	}
 
 	void MovePlaylistRight()
@@ -95,16 +96,6 @@ public class GM : MonoBehaviour {
 		}
 	}
 
-	void MoveGameUp()
-	{
-		playlists[viewingPlaylist].MoveUp();
-	}
-
-	void MoveGameDown()
-	{
-		playlists[viewingPlaylist].MoveDown();
-	}
-
 	void RefreshGrid()
 	{
 		playlistScrollView.GetComponentInChildren<UIGrid>().Reposition();
@@ -119,5 +110,5 @@ public class GM : MonoBehaviour {
 	void CursorAway(int g)
 	{
 
-	}
+	}*/
 }

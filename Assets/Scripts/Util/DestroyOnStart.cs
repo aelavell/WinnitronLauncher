@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DestoryOnStart : MonoBehaviour {
+public class DestroyOnStart : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
