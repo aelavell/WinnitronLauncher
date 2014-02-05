@@ -24,6 +24,10 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 	void Update() {
 		if(Input.GetKeyDown(KeyCode.UpArrow)) Move(-1);
 		else if(Input.GetKeyDown(KeyCode.DownArrow)) Move(1);
+		if (Input.GetKeyDown(KeyCode.Return)) {
+			Runner.Instance.Run(playlist[currentGameIndex]);
+			Debug.Log("megaman");
+		}
 	}
 
 	void Move(int direction) {
@@ -35,7 +39,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 			var startY = titleGrid.transform.localPosition.y;
 			moveThroughList = StartCoroutine<_>(Coroutines.OverTime(ScreenshotDisplayManager.Instance.CROSSFADE_TIME, Funcs.Identity, t => { 
 				var lp = titleGrid.transform.localPosition;
-				titleGrid.transform.localPosition = new Vector3(lp.x, Mathf.SmoothStep(startY, startY + direction * GRID_Y_OFFSET, t), lp.z);
+				titleGrid.transform.localPosition = new Vector3(lp.x, Mathf.SmoothStep(startY, direction * GRID_Y_OFFSET, t), lp.z);
 				if (t == 1) {
 					currentGameIndex = Maths.Mod(currentGameIndex + direction, playlist.Count);
 					moveThroughList = null;

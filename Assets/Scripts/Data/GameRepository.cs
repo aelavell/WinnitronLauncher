@@ -32,7 +32,8 @@ public class GameRepository : Singleton<GameRepository> {
 		var author = metaInfo[1];
 		var screenshot = new Texture2D(1024, 768);
 		screenshot.LoadImage(File.ReadAllBytes(Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".png")));
+		var executablePath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".exe");
 
-		return new Game(name, author, screenshot);
+		return new Game(name, author, screenshot, executablePath);
 	}
 }
