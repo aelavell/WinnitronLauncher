@@ -30,7 +30,6 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 		else if(Input.GetKeyDown(KeyCode.DownArrow)) Move(1);
 		if (Input.GetKeyDown(KeyCode.Return)) {
 			Runner.Instance.Run(playlist[currentGameIndex]);
-			Debug.Log("megaman");
 		}
 	}
 
