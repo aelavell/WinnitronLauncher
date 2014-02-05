@@ -26,10 +26,11 @@ public class GameRepository : Singleton<GameRepository> {
 	}
 
 	Game CreateRepresentation(DirectoryInfo gameDirectory) {
-		var metaInfoPath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".txt");
-		var metaInfo = File.ReadAllLines(metaInfoPath);
-		var name = metaInfo[0];
-		var author = metaInfo[1];
+		//var metaInfoPath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".txt");
+		//var metaInfo = File.ReadAllLines(metaInfoPath);
+		var name = gameDirectory.Name;//metaInfo[0];
+		//var author = metaInfo[1];
+		string author = null;
 		var screenshot = new Texture2D(1024, 768);
 		screenshot.LoadImage(File.ReadAllBytes(Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".png")));
 		var executablePath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".exe");
