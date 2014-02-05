@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
-	public float CROSSFADE_TIME = 0.5f;
+	public float CROSSFADE_TIME = 0.3f;
 	UITexture[] screens;
 	UIPanel panel;
 	int currentScreenIndex = 0;
@@ -28,7 +28,7 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
 		if (crossfade == null) {
 			var nextIndex = Maths.Mod((currentScreenIndex + 1), screens.Length);
 			screens[nextIndex].mainTexture = screenshot;
-			crossfade = StartCoroutine<_>(Coroutines.OverTime(CROSSFADE_TIME, Funcs.Identity, t => { 
+			crossfade = StartCoroutine<_>(Coroutines.OverTime(CROSSFADE_TIME, Funcs.SmoothStep, t => { 
 				screens[currentScreenIndex].alpha = 1 -t; 
 				screens[nextIndex].alpha = t;
 				if (t == 1) {
