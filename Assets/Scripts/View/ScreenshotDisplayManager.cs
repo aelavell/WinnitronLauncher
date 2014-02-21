@@ -28,7 +28,7 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
 		if (crossfade == null) {
 			var nextIndex = Maths.Mod((currentScreenIndex + 1), screens.Length);
 			screens[nextIndex].mainTexture = screenshot;
-			crossfade = StartCoroutine<_>(Coroutines.OverTime(CROSSFADE_TIME, Funcs.SmoothStep, t => { 
+			crossfade = StartCoroutine<_>(Coroutines.OverTime(CROSSFADE_TIME, Funcs.Identity, t => { 
 				screens[currentScreenIndex].alpha = 1 -t; 
 				screens[nextIndex].alpha = t;
 				if (t == 1) {
