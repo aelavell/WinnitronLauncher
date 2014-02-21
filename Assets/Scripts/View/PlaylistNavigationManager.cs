@@ -29,7 +29,10 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 		if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown (KeyCode.I)) Move(-1);
 		else if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.K)) Move(1);
 		if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.M)) {
-			Runner.Instance.Run(playlist[currentGameIndex]);
+			// only able choose the game if we're not currently moving through the game list
+			if (moveThroughList == null) {
+				Runner.Instance.Run(playlist[currentGameIndex]);
+			}
 		}
 	}
 

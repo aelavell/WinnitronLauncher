@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
-	public float CROSSFADE_TIME = 0.3f;
+	public float CROSSFADE_TIME = 0.25f;
 	UITexture[] screens;
 	UIPanel panel;
 	int currentScreenIndex = 0;
