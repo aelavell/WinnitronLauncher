@@ -26,9 +26,9 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 	}
 
 	void Update() {
-		if(Input.GetKeyDown(KeyCode.UpArrow)) Move(-1);
-		else if(Input.GetKeyDown(KeyCode.DownArrow)) Move(1);
-		if (Input.GetKeyDown(KeyCode.Return)) {
+		if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown (KeyCode.I)) Move(-1);
+		else if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.K)) Move(1);
+		if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.M)) {
 			Runner.Instance.Run(playlist[currentGameIndex]);
 		}
 	}
