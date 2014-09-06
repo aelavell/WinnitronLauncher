@@ -5,10 +5,10 @@ using System.Collections;
 public class Game {
 	public string name;
 	public string author;
-	public Texture2D screenshot;
+	public Sprite screenshot;
 	public string executablePath;
 	
-	public Game(string name, string author, Texture2D screenshot, string executablePath) {
+	public Game(string name, string author, Sprite screenshot, string executablePath) {
 		this.name = name;
 		this.author = author;
 		this.screenshot = screenshot;

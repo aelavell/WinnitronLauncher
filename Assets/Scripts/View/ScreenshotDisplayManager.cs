@@ -17,12 +17,12 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
         screens = GetComponentsInChildren<Image>();
         
         foreach (var screen in screens) {
-            // Need to manipulate the color property instead?
-            //screen.alpha = 0;     
+            
+            screen.color = new Color(screen.color.r, screen.color.g, screen.color.b, 0);     
         }
 
-        //screens[0].alpha = 1;
-        //screens[0].mainTexture = GameRepository.Instance.games[0].screenshot;
+        screens[0].color = new Color(screens[0].color.r, screens[0].color.g, screens[0].color.b, 1);             
+        screens[0].sprite = GameRepository.Instance.games[0].screenshot;
     }
 
     //void Update() {

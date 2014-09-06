@@ -31,10 +31,16 @@ public class GameRepository : Singleton<GameRepository> {
 		var name = gameDirectory.Name;//metaInfo[0];
 		//var author = metaInfo[1];
 		string author = null;
-		var screenshot = new Texture2D(1024, 768);
+		
+        // Load the screenshot from the games directory as a Texture2D
+        var screenshot = new Texture2D(1024, 768);
 		screenshot.LoadImage(File.ReadAllBytes(Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".png")));
+
+        // Turn the Texture2D into a sprite
+        var screenshotSprite = Sprite.Create(screenshot, new Rect(0, 0, screenshot.width, screenshot.height), new Vector2(0.5f, 0.5f));
+
 		var executablePath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".exe");
 
-		return new Game(name, author, screenshot, executablePath);
+        return new Game(name, author, screenshotSprite, executablePath);
 	}
 }
