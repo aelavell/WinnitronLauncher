@@ -11,12 +11,12 @@ public class GameLabel : MonoBehaviour {
 	}
 
 	public void Select() {
-		TweenScale tween = TweenScale.Begin (this.gameObject, 0.2f, transform.localScale * selectedSize) ;
-		tween.method = UITweener.Method.EaseOut;
+        //TweenScale tween = TweenScale.Begin (this.gameObject, 0.2f, transform.localScale * selectedSize) ;
+        //tween.method = UITweener.Method.EaseOut;
 	}
 
 	public void Deselect() {
-		TweenScale tween = TweenScale.Begin (this.gameObject, 0.2f, origSize);
-		tween.method = UITweener.Method.EaseOut;
+        //TweenScale tween = TweenScale.Begin (this.gameObject, 0.2f, origSize);
+        //tween.method = UITweener.Method.EaseOut;
 	}
 }
