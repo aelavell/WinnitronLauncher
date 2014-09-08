@@ -8,25 +8,29 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
-
-    List<Game> playlist;    
-    Coroutine<_> moveThroughList;
-
-    List<GameLabel> labelList;
-    int selectedLabelIndex = 1;
-
-    public bool moving { get; set; }
+public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {    
 
     public Text gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
-    
-    public float smallSize;   
+
+    public float smallScale;
 
     // The fixed positions of labels, all other labels are placed relative to these
     public GameObject labelAbove;
     public GameObject labelSelected;
     public GameObject labelBelow;
+
+    public ScreenshotDisplayManager screenshotDisplayManager;
+
+
+    public bool moving { get; set; }
+
+    List<Game> playlist;    
+    Coroutine<_> moveThroughList;
+
+    List<GameLabel> labelList;
+    int selectedGameIndex = 0;
+
 
     void Start() {
 
@@ -43,28 +47,30 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         // Keyboard, move up and down through the current playlist
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.I)) {
 
-            if (selectedLabelIndex == 0)
-                selectedLabelIndex = labelList.Count - 1;
+            if (selectedGameIndex == 0)
+                selectedGameIndex = labelList.Count - 1;
             else
-                selectedLabelIndex--;
+                selectedGameIndex--;
 
             sortLabelList();
+            screenshotDisplayManager.sortImageList(selectedGameIndex);
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.K)) {
 
-            if (selectedLabelIndex >= labelList.Count - 1)
-                selectedLabelIndex = 0;
+            if (selectedGameIndex >= labelList.Count - 1)
+                selectedGameIndex = 0;
             else
-                selectedLabelIndex++;
+                selectedGameIndex++;
 
             sortLabelList();
+            screenshotDisplayManager.sortImageList(selectedGameIndex);
         }
 
         // Launch game
         if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.M)) {
             // only able choose the game if we're not currently moving through the game list
             if (moveThroughList == null) {
-                Runner.Instance.Run(playlist[selectedLabelIndex]);
+                Runner.Instance.Run(playlist[selectedGameIndex]);
             }
         }
     }
@@ -88,28 +94,30 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
     void sortLabelList() {        
 
         // Move and scale currently selected label        
-        labelList[selectedLabelIndex].move(labelSelected.transform.position, Vector3.one);
+        labelList[selectedGameIndex].move(labelSelected.transform.position, Vector3.one);
         
         // Move all labels above it, starting with the closest
-        var index = selectedLabelIndex - 1;
+        var index = selectedGameIndex - 1;
         var startIndex = index;
         
         while (index >= 0) {
 
-            labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), new Vector3(smallSize, smallSize, smallSize));
+            labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
             index--;
         }
 
         // Move all labels below it, starting with the closest
-        index = selectedLabelIndex + 1;
+        index = selectedGameIndex + 1;
         startIndex = index;
 
         while (index < labelList.Count) {
 
-            labelList[index].move(new Vector3(labelBelow.transform.position.x, labelBelow.transform.position.y - (GRID_Y_OFFSET * (index - startIndex)), labelBelow.transform.position.z), new Vector3(smallSize, smallSize, smallSize));
+            labelList[index].move(new Vector3(labelBelow.transform.position.x, labelBelow.transform.position.y - (GRID_Y_OFFSET * (index - startIndex)), labelBelow.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
             index++;
         }
 
         moving = true;
     }
+
+
 }
