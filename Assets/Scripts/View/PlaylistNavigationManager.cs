@@ -16,11 +16,12 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
     List<GameLabel> labelList;
     int selectedLabelIndex = 1;
 
+    public bool moving { get; set; }
+
     public Text gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
-
-    public int smallTextSize;
-    public int largeTextSize;
+    
+    public float smallSize;   
 
     // The fixed positions of labels, all other labels are placed relative to these
     public GameObject labelAbove;
@@ -39,6 +40,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
     void Update() {
 
+        // Keyboard, move up and down through the current playlist
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.I)) {
 
             if (selectedLabelIndex == 0)
@@ -58,6 +60,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
             sortLabelList();
         }
 
+        // Launch game
         if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.M)) {
             // only able choose the game if we're not currently moving through the game list
             if (moveThroughList == null) {
@@ -74,16 +77,18 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
             label.text = game.name;            
             label.transform.parent = transform;
             
+            label.GetComponent<GameLabel>().playlistNavMan = this;
+
             labelList.Add(label.GetComponent<GameLabel>());
         }
 
         sortLabelList();
     }
 
-    void sortLabelList() {
+    void sortLabelList() {        
 
         // Move and scale currently selected label        
-        labelList[selectedLabelIndex].move(labelSelected.transform.position, largeTextSize);
+        labelList[selectedLabelIndex].move(labelSelected.transform.position, Vector3.one);
         
         // Move all labels above it, starting with the closest
         var index = selectedLabelIndex - 1;
@@ -91,7 +96,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         
         while (index >= 0) {
 
-            labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), smallTextSize);
+            labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), new Vector3(smallSize, smallSize, smallSize));
             index--;
         }
 
@@ -101,8 +106,10 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
         while (index < labelList.Count) {
 
-            labelList[index].move(new Vector3(labelBelow.transform.position.x, labelBelow.transform.position.y - (GRID_Y_OFFSET * (index - startIndex)), labelBelow.transform.position.z), smallTextSize);
+            labelList[index].move(new Vector3(labelBelow.transform.position.x, labelBelow.transform.position.y - (GRID_Y_OFFSET * (index - startIndex)), labelBelow.transform.position.z), new Vector3(smallSize, smallSize, smallSize));
             index++;
         }
+
+        moving = true;
     }
 }

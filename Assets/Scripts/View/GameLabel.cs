@@ -5,7 +5,9 @@ using System.Collections;
 public class GameLabel : MonoBehaviour {
 
     GoTween currentTween;
-    Text text;    
+    Text text;
+
+    public PlaylistNavigationManager playlistNavMan { get; set; }
 
 	public Vector2 origSize;
 	public float selectedSize = 1;
@@ -35,11 +37,16 @@ public class GameLabel : MonoBehaviour {
         //print(fontSize + "   " + text.fontSize);
     }
 
-    public void move(Vector3 pos, int size) {
+    public void move(Vector3 pos, Vector3 scale) {
 
-        currentTween = Go.to(this, tweenTime, new GoTweenConfig()
-            .vector3Prop("positionProperty", pos)
-            .intProp("fontSize", size)
+        if (playlistNavMan.moving) {
+
+            currentTween.destroy();
+        }
+
+        currentTween = Go.to(transform, tweenTime, new GoTweenConfig()
+            .position(pos)            
+            .scale(scale)            
             .setEaseType(GoEaseType.ExpoOut));
 
 
@@ -58,6 +65,6 @@ public class GameLabel : MonoBehaviour {
 
     public void onMoveComplete() {
 
-
+        playlistNavMan.moving = false;
     }
 }
