@@ -10,15 +10,17 @@ using System.Collections.Generic;
 
 public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
-    List<Game> playlist;
-    int currentGameIndex = 0;
+    List<Game> playlist;    
     Coroutine<_> moveThroughList;
 
     List<GameLabel> labelList;
-    int selectedLabelIndex = 0;
+    int selectedLabelIndex = 1;
 
     public Text gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
+
+    public int smallTextSize;
+    public int largeTextSize;
 
     // The fixed positions of labels, all other labels are placed relative to these
     public GameObject labelAbove;
@@ -37,14 +39,29 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
     void Update() {
 
-        //if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.I)) Move(-1);
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.I)) {
 
-        //else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.K)) Move(1);
+            if (selectedLabelIndex == 0)
+                selectedLabelIndex = labelList.Count - 1;
+            else
+                selectedLabelIndex--;
+
+            sortLabelList();
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.K)) {
+
+            if (selectedLabelIndex >= labelList.Count - 1)
+                selectedLabelIndex = 0;
+            else
+                selectedLabelIndex++;
+
+            sortLabelList();
+        }
 
         if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.M)) {
             // only able choose the game if we're not currently moving through the game list
             if (moveThroughList == null) {
-                Runner.Instance.Run(playlist[currentGameIndex]);
+                Runner.Instance.Run(playlist[selectedLabelIndex]);
             }
         }
     }
@@ -66,15 +83,26 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
     void sortLabelList() {
 
         // Move and scale currently selected label        
-        labelList[selectedLabelIndex].move(labelSelected.transform.position, 36);
-
+        labelList[selectedLabelIndex].move(labelSelected.transform.position, largeTextSize);
+        
         // Move all labels above it, starting with the closest
         var index = selectedLabelIndex - 1;
         var startIndex = index;
+        
         while (index >= 0) {
 
-            labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), 36);
+            labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), smallTextSize);
             index--;
+        }
+
+        // Move all labels below it, starting with the closest
+        index = selectedLabelIndex + 1;
+        startIndex = index;
+
+        while (index < labelList.Count) {
+
+            labelList[index].move(new Vector3(labelBelow.transform.position.x, labelBelow.transform.position.y - (GRID_Y_OFFSET * (index - startIndex)), labelBelow.transform.position.z), smallTextSize);
+            index++;
         }
     }
 }

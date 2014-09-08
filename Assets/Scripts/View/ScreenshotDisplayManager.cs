@@ -18,7 +18,7 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
         
         foreach (var screen in screens) {
             
-            screen.color = new Color(screen.color.r, screen.color.g, screen.color.b, 0);     
+            screen.color = new Color(1, 1, 1, 0);     
         }
 
         screens[0].color = new Color(screens[0].color.r, screens[0].color.g, screens[0].color.b, 1);             

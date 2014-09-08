@@ -28,7 +28,8 @@ public class GameRepository : Singleton<GameRepository> {
 	Game CreateRepresentation(DirectoryInfo gameDirectory) {
 		//var metaInfoPath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".txt");
 		//var metaInfo = File.ReadAllLines(metaInfoPath);
-		var name = gameDirectory.Name;//metaInfo[0];
+		var directoryName = gameDirectory.Name;//metaInfo[0];
+        var name = directoryName.Replace('_', ' ');
 		//var author = metaInfo[1];
 		string author = null;
 		
