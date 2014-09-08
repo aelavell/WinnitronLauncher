@@ -18,10 +18,10 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
         
         foreach (var screen in screens) {
             
-            screen.color = new Color(1, 1, 1, 0);     
+            //screen.color = new Color(1, 1, 1, 0);     
         }
 
-        screens[0].color = new Color(screens[0].color.r, screens[0].color.g, screens[0].color.b, 1);             
+        //screens[0].color = new Color(screens[0].color.r, screens[0].color.g, screens[0].color.b, 1);             
         screens[0].sprite = GameRepository.Instance.games[0].screenshot;
     }
 
