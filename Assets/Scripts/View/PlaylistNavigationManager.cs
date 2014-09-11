@@ -45,7 +45,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
     void Update() {
 
         // Keyboard, move up and down through the current playlist
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.I)) {
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
             
             if (selectedGameIndex == 0)
                 selectedGameIndex = labelList.Count - 1;
@@ -55,7 +55,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
             sortLabelList();
             screenshotDisplayManager.sortImageList(selectedGameIndex);
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.K)) {
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 
             if (selectedGameIndex >= labelList.Count - 1)
                 selectedGameIndex = 0;

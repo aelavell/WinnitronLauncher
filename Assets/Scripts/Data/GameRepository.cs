@@ -44,4 +44,14 @@ public class GameRepository : Singleton<GameRepository> {
 
         return new Game(name, author, screenshotSprite, executablePath);
 	}
+
+    void Update() {
+
+        if (Input.GetKeyUp(KeyCode.Alpha1)) {
+            Application.LoadLevel(0);
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha2)) {
+            Application.LoadLevel(1);
+        }
+    }
 }
