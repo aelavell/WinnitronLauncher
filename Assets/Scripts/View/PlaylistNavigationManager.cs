@@ -26,10 +26,10 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
     public bool moving { get; set; }
 
     List<Game> playlist;    
-    Coroutine<_> moveThroughList;
 
     List<GameLabel> labelList;
     int selectedGameIndex = 0;
+    bool waiting = false;
 
 
     void Start() {
@@ -46,7 +46,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
         // Keyboard, move up and down through the current playlist
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.I)) {
-
+            
             if (selectedGameIndex == 0)
                 selectedGameIndex = labelList.Count - 1;
             else
@@ -67,11 +67,10 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         }
 
         // Launch game
-        if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.M)) {
-            // only able choose the game if we're not currently moving through the game list
-            if (moveThroughList == null) {
-                Runner.Instance.Run(playlist[selectedGameIndex]);
-            }
+        if (!waiting && (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X) || Input.GetKeyUp(KeyCode.N) || Input.GetKeyUp(KeyCode.M))) {
+
+            waiting = true; StartCoroutine("wait"); // So that the user can't launch multiple games at once
+            Runner.Instance.Run(playlist[selectedGameIndex]);            
         }
     }
 
@@ -119,5 +118,9 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         moving = true;
     }
 
+    IEnumerator wait() {
 
+        yield return new WaitForSeconds(1);
+        waiting = false;
+    }
 }

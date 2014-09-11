@@ -22,12 +22,10 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
 
     Image[] screens;
 
-    List<GameImage> imageList;
-    
-    int currentScreenIndex = 0;
+    List<GameImage> imageList;        
     
 
-    void Start() {
+    void Start() { 
 
         imageList = new List<GameImage>();
 
@@ -49,7 +47,7 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
             imageList.Add(image.GetComponent<GameImage>());
         }
 
-        sortImageList(2);
+        sortImageList(0);
     }
 
     public void sortImageList(int selectedGameIndex) {

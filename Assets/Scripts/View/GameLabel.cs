@@ -8,13 +8,7 @@ public class GameLabel : MonoBehaviour {
     public float tweenTime;
 
     GoTween currentTween;
-    Text text;
 
-
-	void Awake() {		
-
-        text = GetComponent<Text>();        
-	}
 
     public void move(Vector3 pos, Vector3 scale) {
 

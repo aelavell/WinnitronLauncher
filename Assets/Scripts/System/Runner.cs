@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Collections;
 
 public class Runner : Singleton<Runner> {
+
+
 	public void Run(Game game) {
 		Process myProcess = new Process();
 		myProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -14,7 +16,7 @@ public class Runner : Singleton<Runner> {
 		StartCoroutine(RunProcess(myProcess));
 	}
 
-	IEnumerator RunProcess(Process process){ 
+	IEnumerator RunProcess(Process process){  
 		Screen.fullScreen = false;
 		yield return new WaitForSeconds(1.0f);
 		process.Start();
