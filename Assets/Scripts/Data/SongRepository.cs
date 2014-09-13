@@ -5,29 +5,30 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class GameRepository : Singleton<GameRepository> {
+public class SongRepository : Singleton<GameRepository> {
 
-	public List<Game> games;
+	public List<Song> songList;
 	
-	string GAMES_SUBDIRECTORY = "Games";
+	string MUSIC_SUBDIRECTORY = "Music";
 
-	string gamesDirectory;
+	string musicDirectory;
 
 	protected override void Awake() {
 		base.Awake();
-		gamesDirectory = Path.Combine(Application.dataPath, GAMES_SUBDIRECTORY);
+
+        musicDirectory = Path.Combine(Application.dataPath, MUSIC_SUBDIRECTORY);
 		BuildList();
 	}
 
 	void BuildList() {
 
-		var gamesDir = new DirectoryInfo(gamesDirectory);
-		foreach (var gameDir in gamesDir.GetDirectories()) {
-			games.Add(CreateRepresentation(gameDir));
+        var songDir = new DirectoryInfo(musicDirectory);
+        foreach (var musicDir in musicDir.GetDirectories()) {
+            songList.Add(CreateRepresentation());
 		}
 	}
 
-	Game CreateRepresentation(DirectoryInfo gameDirectory) {
+    Song CreateRepresentation() {
 		//var metaInfoPath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".txt");
 		//var metaInfo = File.ReadAllLines(metaInfoPath);
 		var directoryName = gameDirectory.Name;//metaInfo[0];
