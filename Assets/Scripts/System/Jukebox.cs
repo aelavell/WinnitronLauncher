@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class Jukebox : MonoBehaviour {
 
+    public bool on;
+
     public Text artistName;
     public Text songName;
 
@@ -12,9 +14,6 @@ public class Jukebox : MonoBehaviour {
     private Song[] songs;
 
     private int currentTrack;
-    private int fadeOutTrack = 99;
-
-    private float fadeOutTime = 0;
 
 
     void Start() {
@@ -23,17 +22,22 @@ public class Jukebox : MonoBehaviour {
 
         currentTrack = Random.Range(0, songs.Length);
         audio.clip = songs[currentTrack].clip;
-        audio.Play();
+        if (on) audio.Play();
 
         initWdiget();
     }
 
     void Update() {
 
+        // Player 2 Joystick controls song
         if (Input.GetKeyUp(KeyCode.J))
             lastTrack();
         if (Input.GetKeyUp(KeyCode.L))
             nextTrack();        
+
+        // Check for song end
+        if (!audio.isPlaying && on)
+            nextTrack();
     }
 
     public void nextTrack() {

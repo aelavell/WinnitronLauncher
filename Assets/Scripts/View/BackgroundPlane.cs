@@ -6,26 +6,26 @@ public class BackgroundPlane : MonoBehaviour {
     public GameObject currentPlane;
     public  GameObject otherPlane;
 
-    public float tweenTime;
-
-
     Vector3 startPos;                       // Position to move the plane too when its out of view
 
     public float speed = 5;
 
-    bool tweening;
+    float diff;
+    
 
     void Start() {
-        
+
+        diff = otherPlane.transform.position.z - currentPlane.transform.position.z;
+
         startPos = currentPlane.transform.position;        
     }
 
 	void Update () {
 
         // Create a new plane when the current one has gone far enough
-        if (otherPlane.transform.localPosition.z > 600) {
+        if (otherPlane.transform.localPosition.z > 470) {
 
-            otherPlane.transform.position = startPos;
+            otherPlane.transform.position = new Vector3(otherPlane.transform.position.x, otherPlane.transform.position.y, otherPlane.transform.position.z - (diff * 2));
 
             var temp = otherPlane;
             otherPlane = currentPlane;

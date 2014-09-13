@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {    
+public class GameNavigationManager : Singleton<GameNavigationManager> {    
 
     public Text gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
@@ -90,7 +90,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
             label.text = game.name;            
             label.transform.parent = transform;
             
-            label.GetComponent<GameLabel>().playlistNavMan = this;
+            label.GetComponent<GameLabel>().gameNavMan = this;
 
             labelList.Add(label.GetComponent<GameLabel>());
         }
