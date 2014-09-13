@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: b2b443e7e453e4089aae41631715082e
+guid: 2ed782830910b42f7bf807b68091ed7b
 TextureImporter:
   fileIDToRecycleName:
-    21300000: tesgame3
+    21300000: arrow-01
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -23,7 +23,7 @@ TextureImporter:
   generateCubemap: 0
   seamlessCubemap: 0
   textureFormat: -1
-  maxTextureSize: 1024
+  maxTextureSize: 32
   textureSettings:
     filterMode: -1
     aniso: 1
