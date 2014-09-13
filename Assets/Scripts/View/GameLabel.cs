@@ -7,6 +7,8 @@ public class GameLabel : MonoBehaviour {
     public PlaylistNavigationManager playlistNavMan { get; set; }    
     public float tweenTime;
 
+	public float alpha = 1;
+
     GoTween currentTween;
 
 
@@ -30,4 +32,8 @@ public class GameLabel : MonoBehaviour {
 
         playlistNavMan.moving = false;
     }
+
+	public void setAlpha(float newAlpha) {
+		GetComponent<Text>().color = new Color(1, 1, 1, newAlpha);
+	}
 }

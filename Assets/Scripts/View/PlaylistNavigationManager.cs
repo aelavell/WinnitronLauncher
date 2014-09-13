@@ -22,6 +22,8 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
     public ScreenshotDisplayManager screenshotDisplayManager;
 
+	public Animation UpArrow;
+	public Animation DownArrow;
 
     public bool moving { get; set; }
 
@@ -54,6 +56,9 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
             sortLabelList();
             screenshotDisplayManager.sortImageList(selectedGameIndex);
+
+			UpArrow.Rewind ();
+			UpArrow.Play ();
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 
@@ -64,6 +69,9 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
             sortLabelList();
             screenshotDisplayManager.sortImageList(selectedGameIndex);
+
+			DownArrow.Rewind ();
+			DownArrow.Play ();
         }
 
         // Launch game
@@ -94,6 +102,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
         // Move and scale currently selected label        
         labelList[selectedGameIndex].move(labelSelected.transform.position, Vector3.one);
+		labelList[selectedGameIndex].setAlpha(1);
         
         // Move all labels above it, starting with the closest
         var index = selectedGameIndex - 1;
@@ -102,7 +111,11 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         while (index >= 0) {
 
             labelList[index].move(new Vector3(labelAbove.transform.position.x, labelAbove.transform.position.y + (GRID_Y_OFFSET * (startIndex - index)), labelAbove.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
-            index--;
+
+			//Fade Text as they move away from the selection
+			labelList[index].setAlpha(0.5f - (Mathf.Abs (startIndex - index) * 0.1f));
+            
+			index--;
         }
 
         // Move all labels below it, starting with the closest
@@ -112,6 +125,10 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         while (index < labelList.Count) {
 
             labelList[index].move(new Vector3(labelBelow.transform.position.x, labelBelow.transform.position.y - (GRID_Y_OFFSET * (index - startIndex)), labelBelow.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
+
+			//Fade Text as they move away from the selection
+			labelList[index].setAlpha(0.5f - (Mathf.Abs (startIndex - index) * 0.1f));
+
             index++;
         }
 
