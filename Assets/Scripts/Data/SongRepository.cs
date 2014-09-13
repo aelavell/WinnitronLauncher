@@ -23,30 +23,31 @@ public class SongRepository : Singleton<GameRepository> {
 	void BuildList() {
 
         var songDir = new DirectoryInfo(musicDirectory);
-        foreach (var musicDir in musicDir.GetDirectories()) {
-            songList.Add(CreateRepresentation());
-		}
+
+        //foreach (var musicDir in musicDir.GetDirectories()) {
+        //    songList.Add(CreateRepresentation());
+        //}
 	}
 
-    Song CreateRepresentation() {
-		//var metaInfoPath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".txt");
-		//var metaInfo = File.ReadAllLines(metaInfoPath);
-		var directoryName = gameDirectory.Name;//metaInfo[0];
-        var name = directoryName.Replace('_', ' ');
-		//var author = metaInfo[1];
-		string author = null;
+    //Song CreateRepresentation() {
+    //    ////var metaInfoPath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".txt");
+    //    ////var metaInfo = File.ReadAllLines(metaInfoPath);
+    //    //var directoryName = gameDirectory.Name;//metaInfo[0];
+    //    //var name = directoryName.Replace('_', ' ');
+    //    ////var author = metaInfo[1];
+    //    //string author = null;
 		
-        // Load the screenshot from the games directory as a Texture2D
-        var screenshot = new Texture2D(1024, 768);
-		screenshot.LoadImage(File.ReadAllBytes(Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".png")));
+    //    //// Load the screenshot from the games directory as a Texture2D
+    //    //var screenshot = new Texture2D(1024, 768);
+    //    //screenshot.LoadImage(File.ReadAllBytes(Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".png")));
 
-        // Turn the Texture2D into a sprite
-        var screenshotSprite = Sprite.Create(screenshot, new Rect(0, 0, screenshot.width, screenshot.height), new Vector2(0.5f, 0.5f));
+    //    //// Turn the Texture2D into a sprite
+    //    //var screenshotSprite = Sprite.Create(screenshot, new Rect(0, 0, screenshot.width, screenshot.height), new Vector2(0.5f, 0.5f));
 
-		var executablePath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".exe");
+    //    //var executablePath = Path.Combine(gameDirectory.FullName, gameDirectory.Name + ".exe");
 
-        return new Game(name, author, screenshotSprite, executablePath);
-	}
+    //    return new Game(name, author, screenshotSprite, executablePath);
+    //}
 
     void Update() {
 
