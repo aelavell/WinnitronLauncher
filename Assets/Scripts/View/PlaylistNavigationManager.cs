@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {    
 
-    public Text gameLabelPrefab;
+    public GameObject gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
 
     public float smallScale;
@@ -86,8 +86,8 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
         foreach (Game game in playlist) {
 
-            var label = Instantiate(gameLabelPrefab) as Text;
-            label.text = game.name;            
+            var label = Instantiate(gameLabelPrefab) as GameObject;
+			label.GetComponent<GameLabel>().renameLabel(game.name);
             label.transform.parent = transform;
             
             label.GetComponent<GameLabel>().playlistNavMan = this;
@@ -103,6 +103,7 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
         // Move and scale currently selected label        
         labelList[selectedGameIndex].move(labelSelected.transform.position, Vector3.one);
 		labelList[selectedGameIndex].setAlpha(1);
+		labelList[selectedGameIndex].selected = true;
         
         // Move all labels above it, starting with the closest
         var index = selectedGameIndex - 1;
@@ -114,6 +115,8 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
 			//Fade Text as they move away from the selection
 			labelList[index].setAlpha(0.5f - (Mathf.Abs (startIndex - index) * 0.1f));
+
+			labelList[index].selected = false;
             
 			index--;
         }
@@ -128,6 +131,8 @@ public class PlaylistNavigationManager : Singleton<PlaylistNavigationManager> {
 
 			//Fade Text as they move away from the selection
 			labelList[index].setAlpha(0.5f - (Mathf.Abs (startIndex - index) * 0.1f));
+
+			labelList[index].selected = false;
 
             index++;
         }
