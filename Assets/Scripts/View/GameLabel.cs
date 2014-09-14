@@ -4,7 +4,7 @@ using System.Collections;
 
 public class GameLabel : MonoBehaviour {
 
-    public PlaylistNavigationManager playlistNavMan { get; set; }    
+    public GameNavigationManager gameNavMan { get; set; }    
     public float tweenTime;
 
 	public bool selected = false;
@@ -29,7 +29,7 @@ public class GameLabel : MonoBehaviour {
 
     public void move(Vector3 pos, Vector3 scale) {
 
-        if (playlistNavMan.moving) {
+        if (gameNavMan.moving) {
 
             currentTween.destroy();
         }
@@ -45,7 +45,7 @@ public class GameLabel : MonoBehaviour {
 
     public void onMoveComplete() {
 
-        playlistNavMan.moving = false;
+        gameNavMan.moving = false;
     }
 
 	public void setAlpha(float newAlpha) {
