@@ -20,6 +20,11 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
     public BackgroundPlane backgroundPlane;
 
+    public List<AudioClip> clipList;                    // List of sound effects : 0=Game label tween, 1=switch playlists, 2=launch game 
+
+    public Animation arrowLeft;
+    public Animation arrowRight;
+
     public float tweenTime;                             // Time for movement of playlist and playlist labels
 
     public float GRID_X_OFFSET_PLAYLIST = 60;
@@ -27,6 +32,7 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
     public float smallScale = 0.7f;
 
+    bool loading = true;                                       // Don't accept input for a period of time at the launch of the scene
 
     string playlistsDirectory;                          // Path to the directory containing all the playlist directories
     int selectedPlaylistIndex;
@@ -34,78 +40,98 @@ public class PlaylistNavigationManager : MonoBehaviour {
     public bool moving { get; set; }
 
 
-    void Awake() {
+    void Awake() {        
 
         playlistsDirectory = Path.Combine(Application.dataPath, "Playlists");
 
-        BuildPlaylists();
+        BuildPlaylists(); if (playlistList.Count > 1) selectedPlaylistIndex = 1;
         SortPlaylists();
     }
 
+    void Start() {
+
+        StartCoroutine("waitForLoad");
+    }
+
     void Update() {
+        if (!loading) {
 
-        // Cycle horizontally through playlists
-        if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            // Cycle horizontally through playlists
+            if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
-            // Update the playlist index
-            if (selectedPlaylistIndex == 0)
-                selectedPlaylistIndex = playlistList.Count - 1;
-            else
-                selectedPlaylistIndex--;
-            
-            // Stop all current tweens since they mess with the playlist movement
-            foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
+                // Audio
+                audio.clip = clipList[1];
+                audio.Play();
+
+                // Update the playlist index
+                if (selectedPlaylistIndex == 0)
+                    selectedPlaylistIndex = playlistList.Count - 1;
+                else
+                    selectedPlaylistIndex--;
+
+                // Stop all current tweens since they mess with the playlist movement
+                foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
 
 
-            // Tween all the playlists to the proper position based on the updated index
-            SortPlaylists();
+                // Tween all the playlists to the proper position based on the updated index
+                SortPlaylists();
 
-            // Tell all playlists to sort themselves as they can be out of position if tweens were stopped midway
-            //foreach (Playlist playlist in playlistList) { playlist.sort(); }
-
-            //UpArrow.Rewind();
-            //UpArrow.Play();
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-
-            // Update the playlist index
-            if (selectedPlaylistIndex >= playlistList.Count - 1)
-                selectedPlaylistIndex = 0;
-            else
-                selectedPlaylistIndex++;
-
-            // Stop all current tweens since they mess with the playlist movement
-            foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
-
-            // Tween all the playlists to the proper position based on the updated index
-            SortPlaylists();
-
-            // Tell all playlists to sort themselves as they can be out of position if tweens were stopped midway
-            //foreach (Playlist playlist in playlistList) { playlist.sort(); }
-          
-
-            //DownArrow.Rewind();
-            //DownArrow.Play();
-        }
-
-        // Cycle through games on current playlist
-        if (!moving) {
-            // Keyboard, move up and down through the current playlist
-            if (Input.GetKeyDown(KeyCode.UpArrow)) {
-
-                backgroundPlane.scrollVertical();
-                playlistList[selectedPlaylistIndex].moveUpList();
+                arrowRight.Rewind();
+                arrowRight.Play();
             }
-            else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+            else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 
-                backgroundPlane.scrollVertical();
-                playlistList[selectedPlaylistIndex].moveDownList();
+                // Audio
+                audio.clip = clipList[1];
+                audio.Play();
+
+                // Update the playlist index
+                if (selectedPlaylistIndex >= playlistList.Count - 1)
+                    selectedPlaylistIndex = 0;
+                else
+                    selectedPlaylistIndex++;
+
+                // Stop all current tweens since they mess with the playlist movement
+                foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
+
+                // Tween all the playlists to the proper position based on the updated index
+                SortPlaylists();
+
+                arrowLeft.Rewind();
+                arrowLeft.Play();
             }
 
-            // Launch game
-            if (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X)) {
+            // Cycle through games on current playlist
+            if (!moving) {
+                // Keyboard, move up and down through the current playlist
+                if (Input.GetKeyDown(KeyCode.UpArrow)) {
 
-                playlistList[selectedPlaylistIndex].selectGame();
+                    // Audio
+                    audio.clip = clipList[0];
+                    audio.Play();
+
+                    backgroundPlane.scrollVertical();
+                    playlistList[selectedPlaylistIndex].moveUpList();
+                }
+                else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+
+                    // Audio
+                    audio.clip = clipList[0];
+                    audio.Play();
+
+                    backgroundPlane.scrollVertical();
+                    playlistList[selectedPlaylistIndex].moveDownList();
+                }
+
+                // Launch game
+                if (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X)) {
+
+                    // Audio
+                    audio.clip = clipList[2];
+                    audio.Play();
+
+                    playlistList[selectedPlaylistIndex].selectGame();
+                }
             }
         }
     }
@@ -172,4 +198,10 @@ public class PlaylistNavigationManager : MonoBehaviour {
         moving = true;
     }
 
+    IEnumerator waitForLoad() {
+
+        yield return new WaitForSeconds(1.5f);
+
+        loading = false;
+    }
 }
