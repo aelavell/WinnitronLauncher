@@ -134,7 +134,7 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
             PlaylistLabel playlistLabel = Instantiate(playlistLabelPrefab) as PlaylistLabel;
             playlistLabel.playlistNavigationManager = this;
-            playlistLabel.transform.parent = transform;
+            playlistLabel.transform.parent = GameObject.Find("PlaylistLabelHolder").transform;          // Place all playlist labels inside this object to insure their placement in hierarchy and thus sorting order
             playlistLabel.name = "PlaylistLabel: " + name;
             playlistLabel.initializeName(name);
             playlistLabelList.Add(playlistLabel);
@@ -149,16 +149,22 @@ public class PlaylistNavigationManager : MonoBehaviour {
             if (i < selectedPlaylistIndex) {
 
                 playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x + (GRID_X_OFFSET_LABEL * (selectedPlaylistIndex - i)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale), tweenTime);
+                playlistLabelList[i].setAlpha(0.5f - (Mathf.Abs(selectedPlaylistIndex - i) * 0.1f));
+
                 playlistList[i].move(new Vector3(transform.position.x + (GRID_X_OFFSET_PLAYLIST * (selectedPlaylistIndex - i)), transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
             else if (i == selectedPlaylistIndex) {
 
                 playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x, playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(1, 1, 1), tweenTime);
+                playlistLabelList[i].setAlpha(1);
+
                 playlistList[i].move(new Vector3(transform.position.x, transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
             else if (i > selectedPlaylistIndex) {
 
                 playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x - (GRID_X_OFFSET_LABEL * (i - selectedPlaylistIndex)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale), tweenTime);
+                playlistLabelList[i].setAlpha(0.5f - (Mathf.Abs(selectedPlaylistIndex - i) * 0.1f));
+
                 playlistList[i].move(new Vector3(transform.position.x - (GRID_X_OFFSET_PLAYLIST * (i - selectedPlaylistIndex)), transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
         }
