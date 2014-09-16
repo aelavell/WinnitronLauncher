@@ -22,6 +22,7 @@ public class GameRepository : Singleton<GameRepository> {
 	void BuildList() {
 
 		var gamesDir = new DirectoryInfo(gamesDirectory);
+
 		foreach (var gameDir in gamesDir.GetDirectories()) {
 			games.Add(CreateRepresentation(gameDir));
 		}

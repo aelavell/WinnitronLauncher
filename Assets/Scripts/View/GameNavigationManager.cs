@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameNavigationManager : Singleton<GameNavigationManager> {    
+public class GameNavigationManager : MonoBehaviour {    
 
     public Text gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
@@ -25,9 +25,11 @@ public class GameNavigationManager : Singleton<GameNavigationManager> {
 	public Animation UpArrow;
 	public Animation DownArrow;
 
+    public Playlist playlist;
+
     public bool moving { get; set; }
 
-    List<Game> playlist;    
+    public ScreenshotDisplayManager screenshotDisplayManagerPrefab;
 
     List<GameLabel> labelList;
     int selectedGameIndex = 0;
@@ -36,11 +38,16 @@ public class GameNavigationManager : Singleton<GameNavigationManager> {
 
     void Start() {
 
+        playlist = GetComponentInParent<Playlist>();
+
         labelList = new List<GameLabel>();
 
-        playlist = GameRepository.Instance.games;        
-
         CreateLabels();
+
+        // Instantiate the screenshot manager and store the reference
+        screenshotDisplayManager = Instantiate(screenshotDisplayManagerPrefab) as ScreenshotDisplayManager;
+        screenshotDisplayManager.transform.position = transform.position;
+        screenshotDisplayManager.transform.parent = transform.parent;        
         
     }
 
@@ -78,13 +85,13 @@ public class GameNavigationManager : Singleton<GameNavigationManager> {
         if (!waiting && (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X) || Input.GetKeyUp(KeyCode.N) || Input.GetKeyUp(KeyCode.M))) {
 
             waiting = true; StartCoroutine("wait"); // So that the user can't launch multiple games at once
-            Runner.Instance.Run(playlist[selectedGameIndex]);            
+            Runner.Instance.Run(playlist.gamesList[selectedGameIndex]);            
         }
     }
 
     void CreateLabels() {
 
-        foreach (Game game in playlist) {
+        foreach (Game game in playlist.gamesList) {
 
             var label = Instantiate(gameLabelPrefab) as Text;
             label.text = game.name;            
@@ -95,10 +102,17 @@ public class GameNavigationManager : Singleton<GameNavigationManager> {
             labelList.Add(label.GetComponent<GameLabel>());
         }
 
+        StartCoroutine("waitThenSort");
+    }
+
+    IEnumerator waitThenSort() {
+
+        yield return new WaitForSeconds(1.0f);
+
         sortLabelList();
     }
 
-    void sortLabelList() {        
+    public void sortLabelList() {        
 
         // Move and scale currently selected label        
         labelList[selectedGameIndex].move(labelSelected.transform.position, Vector3.one);

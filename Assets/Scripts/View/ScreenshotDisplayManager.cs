@@ -3,9 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
+public class ScreenshotDisplayManager : MonoBehaviour {
 
-    public GameObject imagePosition;
+    public GameObject imagePosition;                //Object that marks the position where the current selected image should be placed;
     public Image gameImagePrefab;
 
     public float GRID_Y_OFFSET = 60;
@@ -15,28 +15,28 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
     public Material currentScreenshot;
     public Material otherScreenshot;
 
+    public Playlist playlist;
 
-    public bool moving { get; set; }
 
-    List<Game> playlist;
+    public bool moving { get; set; }    
 
     Image[] screens;
 
     List<GameImage> imageList;        
     
 
-    void Start() { 
+    void Start() {
+
+        playlist = GetComponentInParent<Playlist>();
 
         imageList = new List<GameImage>();
-
-        playlist = GameRepository.Instance.games;        
 
         createScreenshots();
     }
 
     void createScreenshots() {
 
-        foreach (Game game in playlist) {
+        foreach (Game game in playlist.gamesList) {
 
             var image = Instantiate(gameImagePrefab) as Image;
             image.sprite = game.screenshot;
@@ -46,6 +46,13 @@ public class ScreenshotDisplayManager : Singleton<ScreenshotDisplayManager> {
 
             imageList.Add(image.GetComponent<GameImage>());
         }
+
+        StartCoroutine("waitThenSort");
+    }
+
+    IEnumerator waitThenSort() {
+
+        yield return new WaitForSeconds(1.0f);
 
         sortImageList(0);
     }
