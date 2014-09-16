@@ -3,18 +3,16 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PlaylistLabel : MonoBehaviour {
-
-    public PlaylistNavigationManager playlistNavMan { get; set; }    
-    public float tweenTime;
-
-	public float alpha = 1;
+         
 
     GoTween currentTween;
 
+    public PlaylistNavigationManager playlistNavigationManager { get; set; }   
 
-    public void move(Vector3 pos, Vector3 scale) {
 
-        if (playlistNavMan.moving) {
+    public void move(Vector3 pos, Vector3 scale, float tweenTime) {
+
+        if (playlistNavigationManager.moving) {
 
             currentTween.destroy();
         }
@@ -30,7 +28,7 @@ public class PlaylistLabel : MonoBehaviour {
 
     public void onMoveComplete() {
 
-        playlistNavMan.moving = false;
+        playlistNavigationManager.moving = false;
     }
 
 	public void setAlpha(float newAlpha) {

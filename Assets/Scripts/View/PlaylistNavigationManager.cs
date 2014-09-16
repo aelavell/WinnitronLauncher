@@ -18,6 +18,10 @@ public class PlaylistNavigationManager : MonoBehaviour {
     public Playlist playlistPrefab;
     public PlaylistLabel playlistLabelPrefab;
 
+    public BackgroundPlane backgroundPlane;
+
+    public float tweenTime;                             // Time for movement of playlist and playlist labels
+
     public float GRID_X_OFFSET_PLAYLIST = 60;
     public float GRID_X_OFFSET_LABEL = 200;
 
@@ -40,30 +44,69 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
     void Update() {
 
-        // Keyboard, move up and down through the current playlist
+        // Cycle horizontally through playlists
         if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
+            // Update the playlist index
             if (selectedPlaylistIndex == 0)
                 selectedPlaylistIndex = playlistList.Count - 1;
             else
                 selectedPlaylistIndex--;
+            
+            // Stop all current tweens since they mess with the playlist movement
+            foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
 
-            SortPlaylists();            
+
+            // Tween all the playlists to the proper position based on the updated index
+            SortPlaylists();
+
+            // Tell all playlists to sort themselves as they can be out of position if tweens were stopped midway
+            //foreach (Playlist playlist in playlistList) { playlist.sort(); }
 
             //UpArrow.Rewind();
             //UpArrow.Play();
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 
+            // Update the playlist index
             if (selectedPlaylistIndex >= playlistList.Count - 1)
                 selectedPlaylistIndex = 0;
             else
                 selectedPlaylistIndex++;
 
-            SortPlaylists();            
+            // Stop all current tweens since they mess with the playlist movement
+            foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
+
+            // Tween all the playlists to the proper position based on the updated index
+            SortPlaylists();
+
+            // Tell all playlists to sort themselves as they can be out of position if tweens were stopped midway
+            //foreach (Playlist playlist in playlistList) { playlist.sort(); }
+          
 
             //DownArrow.Rewind();
             //DownArrow.Play();
+        }
+
+        // Cycle through games on current playlist
+        if (!moving) {
+            // Keyboard, move up and down through the current playlist
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+
+                backgroundPlane.scrollVertical();
+                playlistList[selectedPlaylistIndex].moveUpList();
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+
+                backgroundPlane.scrollVertical();
+                playlistList[selectedPlaylistIndex].moveDownList();
+            }
+
+            // Launch game
+            if (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X)) {
+
+                playlistList[selectedPlaylistIndex].selectGame();
+            }
         }
     }
 
@@ -76,7 +119,7 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
             // Instantiate a new playlist and set the path to its directory
             Playlist playlist = Instantiate(playlistPrefab) as Playlist;
-            playlist.playlistNavMan = this;
+            playlist.playlistNavigationManager = this;
 
             // Playlist name
             var directoryName = dir.Name;
@@ -90,7 +133,7 @@ public class PlaylistNavigationManager : MonoBehaviour {
             playlistList.Add(playlist);
 
             PlaylistLabel playlistLabel = Instantiate(playlistLabelPrefab) as PlaylistLabel;
-            playlistLabel.playlistNavMan = this;
+            playlistLabel.playlistNavigationManager = this;
             playlistLabel.transform.parent = transform;
             playlistLabel.name = "PlaylistLabel: " + name;
             playlistLabel.initializeName(name);
@@ -100,26 +143,23 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
     public void SortPlaylists() {
 
-        // Sort  the playlist name labels
-
-
         // Sort the playlists (which contain the game labels and screenshots
         for (int i = 0; i < playlistList.Count; i++) {
 
             if (i < selectedPlaylistIndex) {
 
-                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x + (GRID_X_OFFSET_LABEL * (selectedPlaylistIndex - i)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
-                playlistList[i].move(new Vector3(playlistPosition.transform.position.x + (GRID_X_OFFSET_PLAYLIST * (selectedPlaylistIndex - i)), playlistPosition.transform.position.y, playlistPosition.transform.position.z), new Vector3(1, 1, 1));
+                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x + (GRID_X_OFFSET_LABEL * (selectedPlaylistIndex - i)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale), tweenTime);
+                playlistList[i].move(new Vector3(transform.position.x + (GRID_X_OFFSET_PLAYLIST * (selectedPlaylistIndex - i)), transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
             else if (i == selectedPlaylistIndex) {
 
-                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x, playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(1, 1, 1));
-                playlistList[i].move(new Vector3(playlistPosition.transform.position.x, playlistPosition.transform.position.y, playlistPosition.transform.position.z), new Vector3(1, 1, 1));
+                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x, playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(1, 1, 1), tweenTime);
+                playlistList[i].move(new Vector3(transform.position.x, transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
             else if (i > selectedPlaylistIndex) {
 
-                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x - (GRID_X_OFFSET_LABEL * (i - selectedPlaylistIndex)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
-                playlistList[i].move(new Vector3(playlistPosition.transform.position.x - (GRID_X_OFFSET_PLAYLIST * (i - selectedPlaylistIndex)), playlistPosition.transform.position.y, playlistPosition.transform.position.z), new Vector3(1, 1, 1));
+                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x - (GRID_X_OFFSET_LABEL * (i - selectedPlaylistIndex)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale), tweenTime);
+                playlistList[i].move(new Vector3(transform.position.x - (GRID_X_OFFSET_PLAYLIST * (i - selectedPlaylistIndex)), transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
         }
 

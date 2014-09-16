@@ -9,18 +9,28 @@ using System.Collections.Generic;
 public class Playlist : MonoBehaviour {
 
     public List<Game> gamesList;
-    public string gamesDirectory;
-
-    public PlaylistNavigationManager playlistNavMan { get; set; }		
-    public float tweenTime;
+    public string gamesDirectory;    
 
     public float fadeOutAlpha;
-    
-    public GameObject gameNavigationManagerPrefab;
+
+    public GameLabelManager gameLabelManagerPrefab;
+    public ScreenshotManager screenshotManagerPrefab;
+
+    public Animation UpArrow;
+    public Animation DownArrow;
 
 
     GoTween currentTween;
-    
+
+    int selectedGameIndex = 0;
+    bool waiting = false;
+
+    #region Properties
+
+    public GameLabelManager gameLabelManager { get; set; }
+    public ScreenshotManager screenshotManager { get; set; }
+    public PlaylistNavigationManager playlistNavigationManager { get; set; }
+    public bool activated { get; set; }
 
     public Vector3 positionProp {
         get { return transform.position; }
@@ -32,6 +42,46 @@ public class Playlist : MonoBehaviour {
     }
     public float alphaProp { get; set; }
 
+    #endregion
+
+
+    public void moveUpList() {
+
+        if (selectedGameIndex == 0)
+            selectedGameIndex = gamesList.Count - 1;
+        else
+            selectedGameIndex--;
+
+        // Tell all labels and images to tween to the correct positions
+        sort();
+
+        UpArrow.Rewind();
+        UpArrow.Play();
+    }
+
+    public void moveDownList() {
+
+        if (selectedGameIndex >= gamesList.Count - 1)
+            selectedGameIndex = 0;
+        else
+            selectedGameIndex++;
+
+        // Tell all labels and images to tween to the correct positions
+        sort();
+
+        DownArrow.Rewind();
+        DownArrow.Play();
+    }
+
+    public void selectGame() {
+
+        if (!waiting) {
+
+            waiting = true; StartCoroutine("wait"); // So that the user can't launch multiple games at once
+            Runner.Instance.Run(gamesList[selectedGameIndex]);
+        }
+    }
+
     // Builds a list of Game objects based on the game directory inside its main directory. Then instantiates the GameNavigationManager, which then instantiates the ScreenShotDisplayManager
     public void buildList() {
         
@@ -42,9 +92,17 @@ public class Playlist : MonoBehaviour {
             gamesList.Add(CreateRepresentation(dir));
         }
 
-        GameObject gameNavMan = Instantiate(gameNavigationManagerPrefab) as GameObject;
-        gameNavMan.transform.position = transform.position;
-        gameNavMan.transform.parent = transform;        
+        // Instantiate the game label manager and store the reference
+        gameLabelManager = Instantiate(gameLabelManagerPrefab) as GameLabelManager;
+        gameLabelManager.playlist = this;
+        gameLabelManager.transform.parent = transform;
+        gameLabelManager.transform.position = transform.position;        
+
+        // Instantiate the screenshot manager and store the reference
+        screenshotManager = Instantiate(screenshotManagerPrefab) as ScreenshotManager;
+        screenshotManager.playlist = this;
+        screenshotManager.transform.parent = transform;
+        screenshotManager.transform.position = transform.position;        
     }
 
     Game CreateRepresentation(DirectoryInfo gameDirectory) {
@@ -66,9 +124,9 @@ public class Playlist : MonoBehaviour {
         return new Game(name, author, screenshotSprite, executablePath);
     }
 
-    public void move(Vector3 pos, Vector3 scale) {
+    public void move(Vector3 pos, Vector3 scale, float tweenTime) {
 
-        if (playlistNavMan.moving) {
+        if (playlistNavigationManager.moving) {
 
             currentTween.destroy();
         }
@@ -84,6 +142,25 @@ public class Playlist : MonoBehaviour {
 
     public void onMoveComplete() {
 
-        playlistNavMan.moving = false;
+        playlistNavigationManager.moving = false;
+    }
+
+    public void sort() {
+
+        gameLabelManager.sortLabelList(selectedGameIndex);
+        screenshotManager.sortImageList(selectedGameIndex);
+    }
+
+
+    public void stopTween() {
+
+        gameLabelManager.stopTween();
+        screenshotManager.stopTween();
+    }
+
+    IEnumerator wait() {
+
+        yield return new WaitForSeconds(1);
+        waiting = false;
     }
 }

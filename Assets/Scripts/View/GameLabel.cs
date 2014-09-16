@@ -3,18 +3,18 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class GameLabel : MonoBehaviour {
-
-    public GameNavigationManager gameNavMan { get; set; }    
+    
     public float tweenTime;
-
 	public float alpha = 1;
 
     GoTween currentTween;
 
+    public GameLabelManager gameLabelManager { get; set; }    
+
 
     public void move(Vector3 pos, Vector3 scale) {
 
-        if (gameNavMan.moving) {
+        if (gameLabelManager.moving) {
 
             currentTween.destroy();
         }
@@ -30,10 +30,15 @@ public class GameLabel : MonoBehaviour {
 
     public void onMoveComplete() {
 
-        gameNavMan.moving = false;
+        gameLabelManager.moving = false;
     }
 
 	public void setAlpha(float newAlpha) {
 		GetComponent<Text>().color = new Color(1, 1, 1, newAlpha);
 	}
+
+    public void stopTween() {
+
+        currentTween.destroy();
+    }
 }
