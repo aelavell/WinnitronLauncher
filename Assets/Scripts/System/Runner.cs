@@ -9,7 +9,8 @@ public class Runner : MonoBehaviour {
 
     void Awake() {
 
-        jukebox = GameObject.Find("Jukebox").GetComponent<Jukebox>();
+        if (GameObject.Find("Jukebox"))
+            jukebox = GameObject.Find("Jukebox").GetComponent<Jukebox>();
     }
 
 	public void Run(Game game) {
@@ -24,13 +25,13 @@ public class Runner : MonoBehaviour {
 
 	IEnumerator RunProcess(Process process){
 
-        jukebox.stop();
+        if (jukebox) jukebox.stop();
 		Screen.fullScreen = false;
 		yield return new WaitForSeconds(1.0f);
 		process.Start();
 		process.WaitForExit();
 		Screen.fullScreen = true;
-        jukebox.play();
+        if (jukebox) jukebox.play();
 	}
 }
 
