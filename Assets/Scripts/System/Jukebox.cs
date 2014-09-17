@@ -76,7 +76,8 @@ public class Jukebox : MonoBehaviour {
             currentTrack++;
 
         audio.clip = songs[currentTrack].clip;
-        audio.Play();
+
+        if (on) audio.Play();
         initWdiget();
     }
 
@@ -90,7 +91,8 @@ public class Jukebox : MonoBehaviour {
             currentTrack--;
 
         audio.clip = songs[currentTrack].clip;
-        audio.Play();
+
+        if (on) audio.Play();
         initWdiget();
     }
 
