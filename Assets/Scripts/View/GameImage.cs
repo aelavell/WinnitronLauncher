@@ -3,15 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class GameImage : MonoBehaviour {
-
-    public ScreenshotDisplayManager screenshotDisMan { get; set; }		
+    
     public float tweenTime;
-
     public float fadeOutAlpha;
 
     GoTween currentTween;
 
-    
+    #region Properties
+
+    public ScreenshotManager screenshotManager { get; set; }		
     public Vector3 positionProp {
         get { return transform.position; }
         set { transform.position = value; }
@@ -22,6 +22,8 @@ public class GameImage : MonoBehaviour {
     }
     public float alphaProp { get; set; }
 
+    #endregion
+
 
     void Update() {
 
@@ -30,7 +32,7 @@ public class GameImage : MonoBehaviour {
 
     public void move(Vector3 pos, Vector3 scale) {
 
-        if (screenshotDisMan.moving) {
+        if (screenshotManager.moving) {
 
             currentTween.destroy();
         }
@@ -46,6 +48,11 @@ public class GameImage : MonoBehaviour {
 
     public void onMoveComplete() {
 
-        screenshotDisMan.moving = false;
+        screenshotManager.moving = false;
+    }
+
+    public void stopTween() {
+
+        currentTween.destroy();
     }
 }

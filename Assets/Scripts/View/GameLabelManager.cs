@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameNavigationManager : MonoBehaviour {    
+public class GameLabelManager : MonoBehaviour {    
 
     public Text gameLabelPrefab;
     public float GRID_Y_OFFSET = 60;
@@ -18,76 +18,24 @@ public class GameNavigationManager : MonoBehaviour {
     // The fixed positions of labels, all other labels are placed relative to these
     public GameObject labelAbove;
     public GameObject labelSelected;
-    public GameObject labelBelow;
-
-    public ScreenshotDisplayManager screenshotDisplayManager;
-
-	public Animation UpArrow;
-	public Animation DownArrow;
-
-    public Playlist playlist;
-
-    public bool moving { get; set; }
-
-    public ScreenshotDisplayManager screenshotDisplayManagerPrefab;
+    public GameObject labelBelow;        
+    
 
     List<GameLabel> labelList;
-    int selectedGameIndex = 0;
-    bool waiting = false;
+
+    public bool moving { get; set; }
+    public Playlist playlist { get; set; }
 
 
     void Start() {
 
-        playlist = GetComponentInParent<Playlist>();
-
         labelList = new List<GameLabel>();
 
-        CreateLabels();
-
-        // Instantiate the screenshot manager and store the reference
-        screenshotDisplayManager = Instantiate(screenshotDisplayManagerPrefab) as ScreenshotDisplayManager;
-        screenshotDisplayManager.transform.position = transform.position;
-        screenshotDisplayManager.transform.parent = transform.parent;        
+        CreateLabels();      
         
     }
 
-    void Update() {
-
-        // Keyboard, move up and down through the current playlist
-        if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            
-            if (selectedGameIndex == 0)
-                selectedGameIndex = labelList.Count - 1;
-            else
-                selectedGameIndex--;
-
-            sortLabelList();
-            screenshotDisplayManager.sortImageList(selectedGameIndex);
-
-			UpArrow.Rewind ();
-			UpArrow.Play ();
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-
-            if (selectedGameIndex >= labelList.Count - 1)
-                selectedGameIndex = 0;
-            else
-                selectedGameIndex++;
-
-            sortLabelList();
-            screenshotDisplayManager.sortImageList(selectedGameIndex);
-
-			DownArrow.Rewind ();
-			DownArrow.Play ();
-        }
-
-        // Launch game
-        if (!waiting && (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X) || Input.GetKeyUp(KeyCode.N) || Input.GetKeyUp(KeyCode.M))) {
-
-            waiting = true; StartCoroutine("wait"); // So that the user can't launch multiple games at once
-            Runner.Instance.Run(playlist.gamesList[selectedGameIndex]);            
-        }
-    }
+ 
 
     void CreateLabels() {
 
@@ -96,8 +44,8 @@ public class GameNavigationManager : MonoBehaviour {
             var label = Instantiate(gameLabelPrefab) as Text;
             label.text = game.name;            
             label.transform.parent = transform;
-            
-            label.GetComponent<GameLabel>().gameNavMan = this;
+
+            label.GetComponent<GameLabel>().gameLabelManager = this;
 
             labelList.Add(label.GetComponent<GameLabel>());
         }
@@ -109,10 +57,10 @@ public class GameNavigationManager : MonoBehaviour {
 
         yield return new WaitForSeconds(1.0f);
 
-        sortLabelList();
+        sortLabelList(0);
     }
 
-    public void sortLabelList() {        
+    public void sortLabelList(int selectedGameIndex) {        
 
         // Move and scale currently selected label        
         labelList[selectedGameIndex].move(labelSelected.transform.position, Vector3.one);
@@ -149,9 +97,14 @@ public class GameNavigationManager : MonoBehaviour {
         moving = true;
     }
 
-    IEnumerator wait() {
+    public void stopTween() {
 
-        yield return new WaitForSeconds(1);
-        waiting = false;
+        foreach (GameLabel label in labelList) {
+
+            label.stopTween();
+        }
+
+        moving = false;
     }
+
 }

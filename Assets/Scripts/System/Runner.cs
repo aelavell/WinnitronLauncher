@@ -3,8 +3,14 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 
-public class Runner : Singleton<Runner> {
+public class Runner : MonoBehaviour {
+    
+    Jukebox jukebox;
 
+    void Awake() {
+
+        jukebox = GameObject.Find("Jukebox").GetComponent<Jukebox>();
+    }
 
 	public void Run(Game game) {
 		Process myProcess = new Process();
@@ -16,12 +22,15 @@ public class Runner : Singleton<Runner> {
 		StartCoroutine(RunProcess(myProcess));
 	}
 
-	IEnumerator RunProcess(Process process){  
+	IEnumerator RunProcess(Process process){
+
+        jukebox.stop();
 		Screen.fullScreen = false;
 		yield return new WaitForSeconds(1.0f);
 		process.Start();
 		process.WaitForExit();
 		Screen.fullScreen = true;
+        jukebox.play();
 	}
 }
 

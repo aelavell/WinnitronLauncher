@@ -20,6 +20,12 @@ public class BackgroundPlane : MonoBehaviour {
         startPos = currentPlane.transform.position;        
     }
 
+    public void scrollVertical() {
+        
+        animation.Stop();
+        animation.Play();
+    }
+
 	void Update () {
 
         // Create a new plane when the current one has gone far enough
@@ -33,13 +39,6 @@ public class BackgroundPlane : MonoBehaviour {
         }
 
         currentPlane.rigidbody.velocity = Vector3.forward * speed;
-        otherPlane.rigidbody.velocity = Vector3.forward * speed;
-
-
-        if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))) {
-
-            animation.Stop();
-            animation.Play();
-        }        
+        otherPlane.rigidbody.velocity = Vector3.forward * speed;     
 	}     
 }

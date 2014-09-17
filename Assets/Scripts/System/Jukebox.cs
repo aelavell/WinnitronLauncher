@@ -33,11 +33,37 @@ public class Jukebox : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.J))
             lastTrack();
         if (Input.GetKeyUp(KeyCode.L))
-            nextTrack();        
+            nextTrack();
+
+        // Stop & Play from keyboard
+        if (Input.GetKeyUp(KeyCode.P)) {
+
+            if (on) {
+                audio.Stop();
+                on = false;
+            }
+            else {
+                audio.Play();
+                on = true;
+            }
+        }
 
         // Check for song end
         if (!audio.isPlaying && on)
             nextTrack();
+    }
+
+    public void stop() {
+        audio.Stop();
+        on = false;
+    }
+
+    public void play() {
+
+        currentTrack = Random.Range(0, songs.Length);
+        audio.clip = songs[currentTrack].clip;
+        audio.Play();
+        on = true;
     }
 
     public void nextTrack() {

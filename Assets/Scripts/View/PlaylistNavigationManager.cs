@@ -18,11 +18,21 @@ public class PlaylistNavigationManager : MonoBehaviour {
     public Playlist playlistPrefab;
     public PlaylistLabel playlistLabelPrefab;
 
+    public BackgroundPlane backgroundPlane;
+
+    public List<AudioClip> clipList;                    // List of sound effects : 0=Game label tween, 1=switch playlists, 2=launch game 
+
+    public Animation arrowLeft;
+    public Animation arrowRight;
+
+    public float tweenTime;                             // Time for movement of playlist and playlist labels
+
     public float GRID_X_OFFSET_PLAYLIST = 60;
     public float GRID_X_OFFSET_LABEL = 200;
 
     public float smallScale = 0.7f;
 
+    bool loading = true;                                       // Don't accept input for a period of time at the launch of the scene
 
     string playlistsDirectory;                          // Path to the directory containing all the playlist directories
     int selectedPlaylistIndex;
@@ -30,40 +40,99 @@ public class PlaylistNavigationManager : MonoBehaviour {
     public bool moving { get; set; }
 
 
-    void Awake() {
+    void Awake() {        
 
         playlistsDirectory = Path.Combine(Application.dataPath, "Playlists");
 
-        BuildPlaylists();
+        BuildPlaylists(); if (playlistList.Count > 1) selectedPlaylistIndex = 1;
         SortPlaylists();
     }
 
+    void Start() {
+
+        StartCoroutine("waitForLoad");
+    }
+
     void Update() {
+        if (!loading) {
 
-        // Keyboard, move up and down through the current playlist
-        if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            // Cycle horizontally through playlists
+            if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
-            if (selectedPlaylistIndex == 0)
-                selectedPlaylistIndex = playlistList.Count - 1;
-            else
-                selectedPlaylistIndex--;
+                // Audio
+                audio.clip = clipList[1];
+                audio.Play();
 
-            SortPlaylists();            
+                // Update the playlist index
+                if (selectedPlaylistIndex == 0)
+                    selectedPlaylistIndex = playlistList.Count - 1;
+                else
+                    selectedPlaylistIndex--;
 
-            //UpArrow.Rewind();
-            //UpArrow.Play();
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+                // Stop all current tweens since they mess with the playlist movement
+                foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
 
-            if (selectedPlaylistIndex >= playlistList.Count - 1)
-                selectedPlaylistIndex = 0;
-            else
-                selectedPlaylistIndex++;
 
-            SortPlaylists();            
+                // Tween all the playlists to the proper position based on the updated index
+                SortPlaylists();
 
-            //DownArrow.Rewind();
-            //DownArrow.Play();
+                arrowRight.Rewind();
+                arrowRight.Play();
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+
+                // Audio
+                audio.clip = clipList[1];
+                audio.Play();
+
+                // Update the playlist index
+                if (selectedPlaylistIndex >= playlistList.Count - 1)
+                    selectedPlaylistIndex = 0;
+                else
+                    selectedPlaylistIndex++;
+
+                // Stop all current tweens since they mess with the playlist movement
+                foreach (Playlist playlist in playlistList) { playlist.stopTween(); }
+
+                // Tween all the playlists to the proper position based on the updated index
+                SortPlaylists();
+
+                arrowLeft.Rewind();
+                arrowLeft.Play();
+            }
+
+            // Cycle through games on current playlist
+            if (!moving) {
+                // Keyboard, move up and down through the current playlist
+                if (Input.GetKeyDown(KeyCode.UpArrow)) {
+
+                    // Audio
+                    audio.clip = clipList[0];
+                    audio.Play();
+
+                    backgroundPlane.scrollVertical();
+                    playlistList[selectedPlaylistIndex].moveUpList();
+                }
+                else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+
+                    // Audio
+                    audio.clip = clipList[0];
+                    audio.Play();
+
+                    backgroundPlane.scrollVertical();
+                    playlistList[selectedPlaylistIndex].moveDownList();
+                }
+
+                // Launch game
+                if (Input.GetKeyUp(KeyCode.Z) || Input.GetKeyUp(KeyCode.X)) {
+
+                    // Audio
+                    audio.clip = clipList[2];
+                    audio.Play();
+
+                    playlistList[selectedPlaylistIndex].selectGame();
+                }
+            }
         }
     }
 
@@ -76,7 +145,7 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
             // Instantiate a new playlist and set the path to its directory
             Playlist playlist = Instantiate(playlistPrefab) as Playlist;
-            playlist.playlistNavMan = this;
+            playlist.playlistNavigationManager = this;
 
             // Playlist name
             var directoryName = dir.Name;
@@ -90,8 +159,8 @@ public class PlaylistNavigationManager : MonoBehaviour {
             playlistList.Add(playlist);
 
             PlaylistLabel playlistLabel = Instantiate(playlistLabelPrefab) as PlaylistLabel;
-            playlistLabel.playlistNavMan = this;
-            playlistLabel.transform.parent = transform;
+            playlistLabel.playlistNavigationManager = this;
+            playlistLabel.transform.parent = GameObject.Find("PlaylistLabelHolder").transform;          // Place all playlist labels inside this object to insure their placement in hierarchy and thus sorting order
             playlistLabel.name = "PlaylistLabel: " + name;
             playlistLabel.initializeName(name);
             playlistLabelList.Add(playlistLabel);
@@ -100,30 +169,39 @@ public class PlaylistNavigationManager : MonoBehaviour {
 
     public void SortPlaylists() {
 
-        // Sort  the playlist name labels
-
-
         // Sort the playlists (which contain the game labels and screenshots
         for (int i = 0; i < playlistList.Count; i++) {
 
             if (i < selectedPlaylistIndex) {
 
-                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x + (GRID_X_OFFSET_LABEL * (selectedPlaylistIndex - i)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
-                playlistList[i].move(new Vector3(playlistPosition.transform.position.x + (GRID_X_OFFSET_PLAYLIST * (selectedPlaylistIndex - i)), playlistPosition.transform.position.y, playlistPosition.transform.position.z), new Vector3(1, 1, 1));
+                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x + (GRID_X_OFFSET_LABEL * (selectedPlaylistIndex - i)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale), tweenTime);
+                playlistLabelList[i].setAlpha(0.5f - (Mathf.Abs(selectedPlaylistIndex - i) * 0.1f));
+
+                playlistList[i].move(new Vector3(transform.position.x + (GRID_X_OFFSET_PLAYLIST * (selectedPlaylistIndex - i)), transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
             else if (i == selectedPlaylistIndex) {
 
-                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x, playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(1, 1, 1));
-                playlistList[i].move(new Vector3(playlistPosition.transform.position.x, playlistPosition.transform.position.y, playlistPosition.transform.position.z), new Vector3(1, 1, 1));
+                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x, playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(1, 1, 1), tweenTime);
+                playlistLabelList[i].setAlpha(1);
+
+                playlistList[i].move(new Vector3(transform.position.x, transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
             else if (i > selectedPlaylistIndex) {
 
-                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x - (GRID_X_OFFSET_LABEL * (i - selectedPlaylistIndex)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale));
-                playlistList[i].move(new Vector3(playlistPosition.transform.position.x - (GRID_X_OFFSET_PLAYLIST * (i - selectedPlaylistIndex)), playlistPosition.transform.position.y, playlistPosition.transform.position.z), new Vector3(1, 1, 1));
+                playlistLabelList[i].move(new Vector3(playlistNamePosition.transform.position.x - (GRID_X_OFFSET_LABEL * (i - selectedPlaylistIndex)), playlistNamePosition.transform.position.y, playlistNamePosition.transform.position.z), new Vector3(smallScale, smallScale, smallScale), tweenTime);
+                playlistLabelList[i].setAlpha(0.5f - (Mathf.Abs(selectedPlaylistIndex - i) * 0.1f));
+
+                playlistList[i].move(new Vector3(transform.position.x - (GRID_X_OFFSET_PLAYLIST * (i - selectedPlaylistIndex)), transform.position.y, transform.position.z), new Vector3(1, 1, 1), tweenTime);
             }
         }
 
         moving = true;
     }
 
+    IEnumerator waitForLoad() {
+
+        yield return new WaitForSeconds(1.5f);
+
+        loading = false;
+    }
 }

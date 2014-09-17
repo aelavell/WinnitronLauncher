@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ScreenshotDisplayManager : MonoBehaviour {
+public class ScreenshotManager : MonoBehaviour {
 
     public GameObject imagePosition;                //Object that marks the position where the current selected image should be placed;
     public Image gameImagePrefab;
@@ -14,20 +14,17 @@ public class ScreenshotDisplayManager : MonoBehaviour {
 
     public Material currentScreenshot;
     public Material otherScreenshot;
-
-    public Playlist playlist;
-
-
-    public bool moving { get; set; }    
+    
 
     Image[] screens;
 
-    List<GameImage> imageList;        
-    
+    List<GameImage> imageList;
+
+    public bool moving { get; set; }
+    public Playlist playlist { get; set; }
+
 
     void Start() {
-
-        playlist = GetComponentInParent<Playlist>();
 
         imageList = new List<GameImage>();
 
@@ -42,7 +39,7 @@ public class ScreenshotDisplayManager : MonoBehaviour {
             image.sprite = game.screenshot;
             image.transform.parent = transform;
 
-            image.GetComponent<GameImage>().screenshotDisMan = this;
+            image.GetComponent<GameImage>().screenshotManager = this;
 
             imageList.Add(image.GetComponent<GameImage>());
         }
@@ -79,5 +76,16 @@ public class ScreenshotDisplayManager : MonoBehaviour {
         }
 
         moving = true;
+    }
+
+
+    public void stopTween() {
+
+        foreach (GameImage image in imageList) {
+
+            image.stopTween();
+        }
+
+        moving = false;
     }
 }
