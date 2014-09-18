@@ -19,12 +19,13 @@ public class StateManager : MonoBehaviour {
 		foreach(Animation anim in animationsToRewind) {
 			anim.Stop();
 			anim.Rewind();
+			Debug.Log ("rewinding: " + anim.name);
 		}
 	}
 
 	public void Activate() {
-		foreach(GameObject gameObject in gameObjectsToToggleActivation) gameObject.SetActive(true);
-		foreach(Canvas canvas in canvasesToToggleActivation) canvas.enabled = true;
 		foreach(Animation anim in animationsToPlayOnStart) anim.Play();
+		foreach(Canvas canvas in canvasesToToggleActivation) canvas.enabled = true;
+		foreach(GameObject gameObject in gameObjectsToToggleActivation) gameObject.SetActive(true);
 	}
 }
