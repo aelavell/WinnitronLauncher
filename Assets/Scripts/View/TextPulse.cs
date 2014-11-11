@@ -2,9 +2,14 @@
 using System.Collections;
 
 public class TextPulse : MonoBehaviour {
-
-	public float zStart = 0;
+	
 	public float zEnd = 1;
+	public float yEnd = 1;
+	public float xEnd = 1;
+
+	public bool xPulse = false;
+	public bool yPulse = false;
+	public bool zPulse = true;
 
 	public float speed = 1;
 
@@ -13,8 +18,12 @@ public class TextPulse : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		vStart = new Vector3(transform.localScale.x, transform.localScale.y, zStart);
-		vEnd = new Vector3(transform.localScale.x, transform.localScale.y, zEnd);
+		if (!xPulse) xEnd = transform.localScale.x;
+		if (!yPulse) yEnd = transform.localScale.y;
+		if (!zPulse) zEnd = transform.localScale.z;
+
+		vStart = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+		vEnd = new Vector3(xEnd, yEnd, zEnd);
 	}
 	
 	// Update is called once per frame

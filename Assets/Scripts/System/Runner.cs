@@ -24,13 +24,14 @@ public class Runner : MonoBehaviour {
 	}
 
 	IEnumerator RunProcess(Process process){
-
         if (jukebox) jukebox.stop();
 		Screen.fullScreen = false;
 		yield return new WaitForSeconds(1.0f);
+		GM.ChangeState(GM.WorldState.Idle);
 		process.Start();
 		process.WaitForExit();
 		Screen.fullScreen = true;
+		GM.ChangeState(GM.WorldState.Intro);
         if (jukebox) jukebox.play();
 	}
 }
